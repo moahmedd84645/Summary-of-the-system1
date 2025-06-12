@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مركز اختبارات مقرر نظم التشغيل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        
+        .card {
+            background-color: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .quiz-topic-card {
+            cursor: pointer;
+        }
+
+        /* Quiz Modal Styles */
+        #quiz-modal {
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+        }
+        .quiz-option {
+            background-color: #334155;
+            border: 2px solid #475569;
+        }
+        .quiz-option:hover {
+            background-color: #475569;
+            border-color: #64748b;
+        }
+        .quiz-option.correct {
+            background-color: #10b981 !important; /* emerald-500 */
+            border-color: #059669 !important;
+            color: white;
+        }
+        .quiz-option.incorrect {
+            background-color: #ef4444 !important; /* red-500 */
+            border-color: #dc2626 !important;
+            color: white;
+        }
+        .quiz-option.final-correct {
+             border: 2px solid #10b981;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300">
+
+    <div class="container mx-auto p-6 md:p-12">
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-white mb-2">مركز اختبارات نظم التشغيل</h1>
+            <p class="text-lg text-slate-400">اختر أحد الأقسام لبدء الاختبار الخاص به.</p>
+        </header>
+
+        <main id="quiz-selection-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Quiz Topic Cards will be injected here by JavaScript -->
+        </main>
+    </div>
+
+    <!-- Quiz Modal -->
+    <div id="quiz-modal" class="fixed inset-0 z-50 items-center justify-center hidden">
+        <div class="relative bg-slate-800 rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 max-w-4xl max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between p-4 border-b border-slate-700">
+                <h3 id="quiz-title" class="text-xl font-bold text-white">الاختبار</h3>
+                <button id="close-quiz-btn" class="text-slate-400 hover:text-white text-3xl leading-none">&times;</button>
+            </div>
+            
+            <div id="quiz-container" class="p-6 overflow-y-auto">
+                <h4 id="question-text" class="text-2xl font-semibold text-white mb-6 text-center"></h4>
+                <div id="options-container" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                <div id="quiz-progress" class="mt-6 text-center text-slate-400"></div>
+            </div>
+
+            <div id="results-container" class="p-6 overflow-y-auto hidden">
+                 <h3 class="text-3xl font-bold text-center text-white mb-4">النتيجـة النهائيـة</h3>
+                 <p id="score-text" class="text-2xl text-center text-sky-400 font-bold mb-8"></p>
+                 <div id="results-details" class="space-y-4"></div>
+                 <div class="text-center mt-8">
+                     <button id="restart-quiz-btn" class="bg-emerald-500 hover:bg-emerald-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">إعادة الاختبار</button>
+                 </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const quizSelectionContainer = document.getElementById('quiz-selection-container');
+            const quizModal = document.getElementById('quiz-modal');
+            const quizContainer = document.getElementById('quiz-container');
+            const resultsContainer = document.getElementById('results-container');
+            const closeQuizBtn = document.getElementById('close-quiz-btn');
+            const restartQuizBtn = document.getElementById('restart-quiz-btn');
+            const quizTitle = document.getElementById('quiz-title');
+
+            let currentQuizId = '';
+            let currentQuestionIndex = 0;
+            let score = 0;
+            let userAnswers = [];
+            
+            // --- QUIZ DATA BANK ---
+            const quizData = {
+                intro: {
+                    title: "المحتوى النظري",
+                    questions: [
+                        { question: "ما هو الدور الأساسي لنظام التشغيل؟", options: ["تشغيل الألعاب فقط", "إدارة موارد العتاد والبرمجيات", "تصفح الإنترنت", "كتابة النصوص"], correct: 1, explanation: "يعمل نظام التشغيل كوسيط لإدارة جميع موارد الجهاز من عتاد وبرمجيات." },
+                        { question: "أي جزء من نظام التشغيل هو المسؤول المباشر عن إدارة العتاد؟", options: ["واجهة المستخدم (UI)", "النواة (Kernel)", "الغلاف (Shell)", "نظام الملفات"], correct: 1, explanation: "النواة هي قلب نظام التشغيل وتتفاعل مباشرة مع العتاد." },
+                        { question: "في أي عقد بدأت أنظمة التشغيل متعددة البرمجة بالظهور؟", options: ["الخمسينات", "الستينات", "السبعينات", "الثمانينات"], correct: 1, explanation: "شهدت فترة الستينات ظهور أنظمة التشغيل متعددة البرمجة التي تسمح بتشغيل عدة برامج في نفس الوقت." },
+                        { question: "واجهة المستخدم الرسومية تختصر بـ؟", options: ["CLI", "OS", "GUI", "RAM"], correct: 2, explanation: "GUI ترمز إلى Graphical User Interface وهي الواجهة التي نستخدمها اليوم بنوافذها وأيقوناتها." },
+                        { question: "ما هي وظيفة نظام الملفات؟", options: ["تنظيم الملفات والمجلدات", "تسريع المعالج", "زيادة الذاكرة", "الاتصال بالشبكة"], correct: 0, explanation: "نظام الملفات مسؤول عن تنظيم وتخزين واسترجاع البيانات على وسائط التخزين." },
+                        { question: "ماذا يعني مصطلح 'تعدد المهام' (Multitasking) في أنظمة التشغيل؟", options: ["تشغيل مهمة واحدة بسرعة عالية", "تشغيل عدة مهام في نفس الوقت", "إيقاف كل المهام", "حذف المهام القديمة"], correct: 1, explanation: "تعدد المهام هو قدرة نظام التشغيل على تشغيل عدة برامج أو عمليات بشكل متزامن." },
+                        { question: "أي مما يلي ليس من وظائف النواة (Kernel)؟", options: ["إدارة الذاكرة", "إدارة العمليات", "عرض واجهة المستخدم الرسومية", "إدارة أجهزة الإدخال/الإخراج"], correct: 2, explanation: "عرض الواجهة الرسومية هو من مهام طبقات أعلى من النظام، بينما النواة تركز على الإدارة الأساسية للموارد." },
+                        { question: "نظام التشغيل الذي يستخدم في أجهزة الصراف الآلي (ATM) هو غالبًا من نوع؟", options: ["نظام مكتبي", "نظام محمول", "نظام مدمج", "نظام الزمن الحقيقي"], correct: 2, explanation: "الأنظمة المدمجة مصممة لأجهزة ذات وظائف محددة وموارد محدودة مثل أجهزة الصراف الآلي." },
+                        { question: "ما هو الهدف من عملية الإقلاع (Booting Process)؟", options: ["تثبيت برامج جديدة", "فحص الجهاز وتحميل النواة", "الاتصال بالإنترنت", "إغلاق الجهاز"], correct: 1, explanation: "عملية الإقلاع تقوم بفحص العتاد ثم تحميل الجزء الأساسي من نظام التشغيل (النواة) إلى الذاكرة." },
+                        { question: "أي جيل من أنظمة التشغيل شهد بداية دعم الشبكات والإنترنت بشكل واسع؟", options: ["الجيل الأول", "الجيل الثاني", "الجيل الثالث", "الجيل الرابع"], correct: 3, explanation: "الجيل الرابع، الذي بدأ في الثمانينات ومستمر حتى الآن، هو الذي شهد تطور دعم الشبكات والإنترنت." },
+                        { question: "ما هو الاختصار CLI؟", options: ["واجهة المستخدم الرسومية", "واجهة سطر الأوامر", "وحدة المعالجة المركزية", "نواة نظام التشغيل"], correct: 1, explanation: "CLI ترمز إلى Command Line Interface، وهي واجهة نصية للتفاعل مع النظام عبر الأوامر." },
+                        { question: "ماذا تفعل إدارة العمليات (Process Management)؟", options: ["تنظم الملفات", "توزع المهام على المعالج", "تتحكم في الطابعة", "تغير خلفية الشاشة"], correct: 1, explanation: "إدارة العمليات تقوم بجدولة وتوزيع العمليات المختلفة على المعالج لضمان الاستخدام الفعال." },
+                        { question: "نظام تشغيل الزمن الحقيقي (RTOS) مهم في تطبيقات مثل؟", options: ["مشاهدة الأفلام", "أنظمة التحكم في السيارات", "كتابة المقالات", "تصفح التواصل الاجتماعي"], correct: 1, explanation: "تتطلب أنظمة التحكم في السيارات استجابة فورية ودقيقة، وهو ما توفره أنظمة الزمن الحقيقي." },
+                        { question: "أي من هذه الأنظمة مملوك لشركة Apple؟", options: ["Android", "Windows", "Linux", "macOS"], correct: 3, explanation: "macOS هو نظام التشغيل الخاص بأجهزة حواسيب الماك من Apple." },
+                        { question: "ما هو الغلاف (Shell) في نظام التشغيل؟", options: ["البرنامج الذي يحمي من الفيروسات", "الواجهة بين المستخدم والنواة", "الجزء المسؤول عن الذاكرة", "أيقونة سلة المحذوفات"], correct: 1, explanation: "الغلاف (Shell) هو المفسر الذي يأخذ الأوامر من المستخدم ويسلمها للنواة لتنفيذها." },
+                        { question: "ما هو NTFS؟", options: ["نظام تشغيل", "نظام ملفات خاص بويندوز", "نوع من المعالجات", "برنامج مضاد للفيروسات"], correct: 1, explanation: "NTFS هو نظام الملفات الافتراضي والحديث في أنظمة تشغيل ويندوز." },
+                        { question: "ماذا يعني أن نظام التشغيل 'مفتوح المصدر'؟", options: ["أنه مجاني دائمًا", "أن شفرته البرمجية متاحة للجميع للتعديل", "أنه يعمل على كل الأجهزة", "أنه لا يحتوي على أخطاء"], correct: 1, explanation: "مفتوح المصدر يعني أن الكود المصدري متاح للعامة، مما يسمح بالتطوير والتعديل المجتمعي." },
+                        { question: "أي مكون مسؤول عن توفير بيئة للمستخدم لتشغيل البرامج؟", options: ["العتاد (Hardware)", "نظام التشغيل (OS)", "البرنامج التطبيقي", "الشبكة"], correct: 1, explanation: "يوفر نظام التشغيل البيئة الكاملة التي تعمل ضمنها البرامج التطبيقية." },
+                        { question: "ما هي إدارة الموارد (Resource Management)؟", options: ["إدارة كلمات المرور", "إدارة جهات الاتصال", "إدارة وتوزيع موارد العتاد", "إدارة تحديثات البرامج"], correct: 2, explanation: "إدارة الموارد هي وظيفة أساسية لنظام التشغيل لتوزيع العتاد مثل المعالج والذاكرة بين العمليات." },
+                        { question: "ما هو BIOS/UEFI؟", options: ["نظام تشغيل كامل", "برنامج يبدأ عند تشغيل الجهاز لفحص العتاد", "متصفح ويب", "تطبيق للبريد الإلكتروني"], correct: 1, explanation: "BIOS/UEFI هو برنامج ثابت (Firmware) يقوم ببدء تشغيل الجهاز وتمهيد تحميل نظام التشغيل." },
+                        { question: "أي من هذه الخيارات ليس نظام تشغيل مكتبي؟", options: ["Windows 10", "Ubuntu (Linux)", "macOS Catalina", "iOS 15"], correct: 3, explanation: "iOS هو نظام تشغيل محمول مصمم للآيفون والآيباد، وليس للحواسيب المكتبية." },
+                        { question: "ماذا يعني 'تعدد المستخدمين'؟", options: ["شخص واحد يستخدم عدة برامج", "عدة مستخدمين يستخدمون نفس الجهاز في نفس الوقت", "برنامج واحد يستخدمه عدة أشخاص", "عدة أجهزة تتصل ببعضها"], correct: 1, explanation: "أنظمة التشغيل متعددة المستخدمين تسمح لعدة حسابات مستخدمين بالعمل على جهاز واحد بشكل متزامن." },
+                        { question: "ما هو نظام الملفات APFS؟", options: ["خاص بلينكس", "خاص بويندوز", "خاص بأنظمة أبل الحديثة", "نظام قديم"], correct: 2, explanation: "APFS (Apple File System) هو نظام الملفات الحديث الذي تستخدمه Apple في أجهزتها مثل macOS و iOS." },
+                        { question: "وظيفة 'جدولة العمليات' تقع ضمن مسؤولية؟", options: ["إدارة الذاكرة", "إدارة العمليات", "إدارة الملفات", "إدارة الأمان"], correct: 1, explanation: "جدولة العمليات هي جزء أساسي من إدارة العمليات لتحديد أي عملية سيتم تنفيذها ومتى." },
+                        { question: "ما الهدف الرئيسي من 'إدارة الأمان' في نظام التشغيل؟", options: ["تسريع الجهاز", "حماية النظام من الوصول غير المصرح به", "زيادة مساحة التخزين", "تحسين جودة الشاشة"], correct: 1, explanation: "تهدف إدارة الأمان إلى حماية بيانات ونظام التشغيل من التهديدات والاختراقات." }
+                    ]
+                },
+                comparison: {
+                    title: "مقارنة الأنظمة",
+                    questions: [
+                        { question: "أي من هذه الأنظمة يعتبر مفتوح المصدر؟", options: ["iOS", "Windows 11", "Android", "macOS"], correct: 2, explanation: "أندرويد هو نظام مفتوح المصدر، مما يسمح للشركات بتعديله بحرية." },
+                        { question: "أي نظام يتميز بأعلى درجة من التكامل بين العتاد والبرمجيات؟", options: ["Windows 11", "Linux", "Android", "iOS"], correct: 3, explanation: "بما أن Apple تصنّع العتاد والنظام، فإن iOS يتميز بأعلى تكامل." },
+                        { question: "ما هو العيب الرئيسي المشترك بين ويندوز وأندرويد؟", options: ["قلة التطبيقات", "صعوبة الاستخدام", "التعرض للفيروسات", "التكلفة العالية"], correct: 2, explanation: "بسبب انتشارهما وطبيعتهما الأكثر انفتاحًا مقارنة بـ iOS، يكونان أكثر عرضة للبرمجيات الخبيثة." },
+                        { question: "أي نظام يوفر أعلى درجة من التخصيص للمستخدم؟", options: ["iOS", "Android", "Windows Phone", "macOS"], correct: 1, explanation: "أندرويد يتيح للمستخدمين تغيير كل شيء تقريبًا في الواجهة." },
+                        { question: "تحديثات نظام iOS تصل إلى الأجهزة...", options: ["عبر شركات الاتصالات", "بعد فترة طويلة", "بشكل مباشر وفوري من Apple", "فقط للأجهزة الجديدة"], correct: 2, explanation: "Apple ترسل التحديثات لجميع الأجهزة المدعومة في نفس الوقت." },
+                        { question: "أي نظام تشغيل يعتمد بشكل أساسي على 'متجر Play' للتطبيقات؟", options: ["Windows 11", "iOS", "Android", "Linux"], correct: 2, explanation: "متجر Google Play هو المصدر الرسمي للتطبيقات في نظام أندرويد." },
+                        { question: "ما هي الميزة التي يتفوق فيها نظام iOS بشكل واضح على Android؟", options: ["التخصيص", "الأمان والخصوصية", "تنوع الأجهزة", "السعر"], correct: 1, explanation: "بسبب طبيعته المغلقة، يُعتبر iOS عمومًا أكثر أمانًا ويحافظ على خصوصية المستخدم بشكل أفضل." },
+                        { question: "نظام Windows 11 يتميز بدعمه لتشغيل تطبيقات أي نظام آخر؟", options: ["iOS", "macOS", "Linux", "Android"], correct: 3, explanation: "أضاف ويندوز 11 دعمًا لتشغيل تطبيقات أندرويد من خلال متجر أمازون." },
+                        { question: "أي نظام يُعرف بأنه 'مجاني ومفتوح المصدر' ويستخدم كنواة لأندرويد؟", options: ["Windows", "Solaris", "Linux", "BSD"], correct: 2, explanation: "نظام Linux هو نظام مفتوح المصدر، وتستخدم جوجل نواته كنواة لنظام أندرويد." },
+                        { question: "ما المصطلح الذي يصف مشكلة تأخر وصول تحديثات أندرويد للأجهزة؟", options: ["التكامل", "التجزئة (Fragmentation)", "التوافقية", "الترقية"], correct: 1, explanation: "التجزئة هي المشكلة الناتجة عن وجود العديد من إصدارات أندرويد والأجهزة المختلفة، مما يؤخر التحديثات." },
+                        { question: "لأي شركة يتبع نظام macOS؟", options: ["Microsoft", "Google", "Apple", "IBM"], correct: 2, explanation: "نظام macOS هو نظام التشغيل الخاص بأجهزة الكمبيوتر من شركة Apple." },
+                        { question: "أي نظام يفرض قيودًا أكثر على نقل الملفات من وإلى الجهاز؟", options: ["Android", "Windows", "Linux", "iOS"], correct: 3, explanation: "يعتبر نظام iOS أكثر تقييدًا فيما يتعلق بإدارة الملفات ونقلها مقارنة بالأنظمة الأخرى." },
+                        { question: "إذا كانت أولويتك هي الألعاب على الحاسوب الشخصي، فأي نظام هو الخيار الأفضل غالبًا؟", options: ["macOS", "Linux", "Windows", "Chrome OS"], correct: 2, explanation: "يتمتع نظام ويندوز بأكبر دعم من مطوري الألعاب ومكتبة الألعاب الأضخم." },
+                        { question: "ما هو متجر التطبيقات الرسمي لنظام iOS؟", options: ["Play Store", "Aptoide", "Galaxy Store", "App Store"], correct: 3, explanation: "App Store هو المتجر الرسمي والحصري للتطبيقات على أجهزة Apple." },
+                        { question: "أي نظام تشغيل يوفر واجهة موحدة ومتشابهة على جميع الأجهزة التي يعمل عليها؟", options: ["Android", "Linux", "iOS", "Windows"], correct: 2, explanation: "بما أن Apple تتحكم بالعتاد والنظام، فإن تجربة استخدام iOS تكون متطابقة تقريبًا عبر جميع أجهزتها." },
+                        { question: "التكلفة الأولية للجهاز تعتبر عيبًا في أي من الأنظمة التالية؟", options: ["Android", "Linux", "iOS/macOS", "Windows"], correct: 2, explanation: "تعمل أنظمة Apple على أجهزتها فقط، والتي عادة ما تكون ذات تكلفة مرتفعة." },
+                        { question: "من هو المطور الرئيسي لنظام أندرويد؟", options: ["Microsoft", "Apple", "Samsung", "Google"], correct: 3, explanation: "تقود Google تحالف Open Handset Alliance وهي المطور الرئيسي لنظام أندرويد." },
+                        { question: "أي نظام يمنح المطورين حرية أكبر في نشر تطبيقاتهم خارج المتجر الرسمي؟", options: ["iOS", "Android", "Windows (S Mode)", "macOS"], correct: 1, explanation: "يسمح أندرويد بتثبيت التطبيقات من مصادر خارجية (Sideloading)، وهو أمر مقيد جدًا في iOS." },
+                        { question: "فيما يتعلق بواجهة المستخدم، أي نظام بدأ بفكرة 'الويدجتس' (Widgets) على الشاشة الرئيسية؟", options: ["iOS", "Android", "Windows Phone", "Symbian"], correct: 1, explanation: "كانت الويدجتس من المميزات الأساسية في أندرويد منذ بداياته." },
+                        { question: "أي نظام يتطلب حساب مايكروسوفت لتجربة متكاملة؟", options: ["Android", "iOS", "Windows 11", "Linux"], correct: 2, explanation: "يشجع ويندوز 11 بشدة على استخدام حساب مايكروسوفت للمزامنة والخدمات." },
+                        { question: "ما هو نظام التشغيل الذي لا يمتلك شركة تجارية واحدة كبيرة تقف خلفه مباشرة؟", options: ["Windows", "macOS", "Android", "Linux"], correct: 3, explanation: "لينكس هو مشروع مجتمعي ضخم يساهم فيه آلاف المطورين والشركات حول العالم." },
+                        { question: "نظام 'الوضع الآمن' (S Mode) هو إصدار مقيد من أي نظام؟", options: ["Android", "Windows", "iOS", "macOS"], correct: 1, explanation: "Windows S Mode هو إصدار من ويندوز يسمح فقط بتثبيت التطبيقات من متجر مايكروسوفت لزيادة الأمان." },
+                        { question: "أي نظام تشتهر أجهزته بالحفاظ على قيمتها عند إعادة البيع؟", options: ["Android", "Windows", "iOS", "Linux"], correct: 2, explanation: "تحافظ أجهزة Apple (الآيفون والماك) على قيمتها بشكل أفضل من معظم أجهزة أندرويد وويندوز." },
+                        { question: "إذا كنت مطورًا وتريد بناء تطبيق يعمل على أكبر عدد من الهواتف عالميًا، فأي منصة تستهدف أولًا؟", options: ["iOS", "Android", "KaiOS", "Windows Phone"], correct: 1, explanation: "يمتلك أندرويد الحصة السوقية الأكبر عالميًا، مما يجعله الهدف الأوسع للوصول للمستخدمين." },
+                        { question: "أي من هذه الأنظمة بدأ بفكرة المساعد الصوتي 'Siri'؟", options: ["Android (Google Assistant)", "Windows (Cortana)", "iOS (Siri)", "Amazon (Alexa)"], correct: 2, explanation: "Siri هو المساعد الصوتي الذي قدمته Apple لأول مرة مع نظام iOS." }
+                    ]
+                },
+                android: {
+                    title: "نظام أندرويد",
+                    questions: [
+                        { question: "ما هي الشركة التي تقود تطوير نظام أندرويد؟", options: ["مايكروسوفت", "أبل", "جوجل", "سامسونج"], correct: 2, explanation: "جوجل هي المطور الرئيسي لنظام أندرويد وتقود تحالف Open Handset Alliance." },
+                        { question: "ما اسم أول إصدار تجاري من أندرويد؟", options: ["Cupcake", "Donut", "Eclair", "Android 1.0"], correct: 3, explanation: "تم إطلاق أول إصدار تجاري باسم Android 1.0 في سبتمبر 2008." },
+                        { question: "أي من التالي هو ميزة أساسية في أندرويد تتيح وضع تطبيقات مصغرة على الشاشة الرئيسية؟", options: ["الويدجتس (Widgets)", "الاختصارات (Shortcuts)", "المجلدات (Folders)", "الإشعارات (Notifications)"], correct: 0, explanation: "الويدجتس هي تطبيقات صغيرة تفاعلية يمكن وضعها على الشاشة الرئيسية." },
+                        { question: "على أي نواة (Kernel) مبني نظام أندرويد؟", options: ["نواة Windows NT", "نواة XNU (macOS/iOS)", "نواة Linux", "نواة Solaris"], correct: 2, explanation: "يستخدم أندرويد نسخة معدلة من نواة لينكس لإدارة العمليات الأساسية." },
+                        { question: "ماذا يطلق على مشكلة وجود العديد من إصدارات أندرويد المختلفة تعمل في نفس الوقت؟", options: ["التنوع", "التكامل", "التجزئة (Fragmentation)", "التحديث الهوائي"], correct: 2, explanation: "التجزئة هي تحدٍ رئيسي في أندرويد يؤثر على سرعة وصول التحديثات وتجربة المطورين." }
+                    ]
+                },
+                ios: {
+                    title: "نظام iOS",
+                    questions: [
+                         { question: "ما هو اسم متجر التطبيقات الرسمي لأجهزة iOS؟", options: ["Play Store", "App Store", "Galaxy Store", "Amazon Appstore"], correct: 1, explanation: "App Store هو المتجر الرسمي والحصري الذي تديره Apple لتطبيقات iOS." },
+                         { question: "في أي عام تم إطلاق أول هاتف آيفون ونظام iOS؟", options: ["2005", "2007", "2008", "2010"], correct: 1, explanation: "كشف ستيف جوبز عن أول آيفون ونظام تشغيله (iPhone OS) في عام 2007." },
+                         { question: "أي من هذه الميزات تُعتبر من نقاط قوة نظام iOS الرئيسية؟", options: ["التخصيص المفتوح", "التكلفة المنخفضة", "الأمان والخصوصية", "دعم كل أنواع الأجهزة"], correct: 2, explanation: "يشتهر iOS بنظامه المغلق الذي يوفر مستوى عالٍ من الأمان والتحكم في خصوصية المستخدم." },
+                         { question: "ما هو اسم المساعد الصوتي المدمج في نظام iOS؟", options: ["Alexa", "Cortana", "Google Assistant", "Siri"], correct: 3, explanation: "Siri هو المساعد الصوتي الذي قدمته Apple لأول مرة في نظام iOS." },
+                         { question: "لماذا تعتبر تحديثات نظام iOS أسرع في الوصول للمستخدمين؟", options: ["لأنها أصغر حجماً", "لأن Apple تتحكم بالعتاد والنظام معاً", "لأنها اختيارية", "لأن جوجل تساعد في توزيعها"], correct: 1, explanation: "تحكم Apple الكامل بالمنظومة يسمح لها بإرسال التحديثات لجميع الأجهزة المؤهلة في نفس الوقت." }
+                    ]
+                },
+                install: {
+                    title: "تثبيت ويندوز 11",
+                    questions: [
+                         { question: "ما هو الحد الأدنى لسعة الـ USB المطلوبة لإنشاء وسائط تثبيت ويندوز 11؟", options: ["4 جيجابايت", "8 جيجابايت", "16 جيجابايت", "32 جيجابايت"], correct: 1, explanation: "توصي مايكروسوفت باستخدام محرك أقراص USB بسعة 8 جيجابايت على الأقل." },
+                         { question: "ما هو اسم الأداة الرسمية من مايكروسوفت لإنشاء وسائط تثبيت ويندوز؟", options: ["Windows USB/DVD Download Tool", "Rufus", "Media Creation Tool", "Windows Installer"], correct: 2, explanation: "Media Creation Tool هي الأداة الرسمية التي توفرها مايكروسوفت لهذا الغرض." },
+                         { question: "عند تثبيت ويندوز نظيف، أي خيار يجب اختياره؟", options: ["Upgrade: Install Windows and keep files", "Custom: Install Windows only (advanced)", "Repair your computer", "Format Drive"], correct: 1, explanation: "خيار 'Custom' يسمح لك بالتحكم الكامل في الأقسام وإجراء تثبيت نظيف." },
+                         { question: "ما هو الـ BIOS/UEFI؟", options: ["برنامج تشغيل الطابعة", "نظام التشغيل نفسه", "برنامج ثابت لإقلاع الجهاز", "متصفح الإنترنت"], correct: 2, explanation: "هو البرنامج الأول الذي يعمل عند تشغيل الكمبيوتر ومسؤول عن بدء تشغيل العتاد وتحميل نظام التشغيل." },
+                         { question: "ما هو متطلب الأمان الإلزامي لتثبيت ويندوز 11؟", options: ["حساب مايكروسوفت", "اتصال بالإنترنت", "TPM 2.0", "قرص SSD"], correct: 2, explanation: "يعد وجود شريحة TPM 2.0 وتفعيلها متطلبًا أساسيًا لتثبيت ويندوز 11 رسميًا." }
+                    ]
+                },
+                settings: {
+                    title: "إعدادات ويندوز 11",
+                    questions: [
+                        { question: "أين يمكنك تغيير خلفية سطح المكتب في ويندوز 11؟", options: ["System > Display", "Personalization > Background", "Apps > Default apps", "Time & language > Region"], correct: 1, explanation: "يتم التحكم في جميع خيارات تخصيص المظهر، بما في ذلك الخلفية، من قسم Personalization." },
+                        { question: "لتغيير لغة عرض نظام ويندوز 11، تذهب إلى...", options: ["Accounts", "Gaming", "Time & language", "Privacy & security"], correct: 2, explanation: "قسم 'Time & language' هو المسؤول عن لغات العرض والكتابة والمنطقة الزمنية." },
+                        { question: "ما هو Snap Layouts؟", options: ["ميزة لتغيير الألوان", "ميزة لتنظيم النوافذ المفتوحة", "ميزة لتثبيت البرامج", "ميزة للبحث"], correct: 1, explanation: "Snap Layouts هي ميزة جديدة في ويندوز 11 تساعد على ترتيب النوافذ المفتوحة في تخطيطات محددة مسبقًا." },
+                        { question: "كيف يمكنك إخفاء جميع أيقونات سطح المكتب بسرعة؟", options: ["من خلال Control Panel", "بالنقر بالزر الأيمن > View > Show desktop icons", "من خلال Task Manager", "لا يمكن إخفاؤها"], correct: 1, explanation: "يوفر النقر بزر الماوس الأيمن على سطح المكتب خيارًا سريعًا لإظهار أو إخفاء الأيقونات." },
+                        { question: "أين تم نقل قائمة 'ابدأ' (Start) بشكل افتراضي في ويندوز 11؟", options: ["إلى يسار الشاشة", "إلى يمين الشاشة", "إلى أعلى الشاشة", "إلى منتصف شريط المهام"], correct: 3, explanation: "أحد أبرز التغييرات في ويندوز 11 هو توسط قائمة ابدأ وشريط المهام." }
+                    ]
+                },
+                apps: {
+                    title: "إدارة التطبيقات",
+                    questions: [
+                        { question: "ما هي الخطوة الأولى لإلغاء تثبيت برنامج من ويندوز 11؟", options: ["حذف أيقونة البرنامج من سطح المكتب", "الذهاب إلى الإعدادات ثم قسم التطبيقات", "إعادة تشغيل الكمبيوتر", "فصل الإنترنت"], correct: 1, explanation: "تبدأ عملية إزالة التثبيت الصحيحة بالذهاب إلى قائمة التطبيقات المثبتة في الإعدادات." },
+                        { question: "ما هو UAC الذي يظهر عند تثبيت البرامج؟", options: ["مدير المهام", "التحكم في حساب المستخدم", "مضاد الفيروسات", "أداة تنظيف القرص"], correct: 1, explanation: "UAC (User Account Control) هي نافذة أمان تطلب موافقتك قبل السماح لأي برنامج بإجراء تغييرات على النظام." },
+                        { question: "من أين يمكنك إدارة التطبيقات التي تبدأ مع تشغيل ويندوز؟", options: ["من قائمة ابدأ", "من مدير المهام (Task Manager)", "من لوحة التحكم (Control Panel)", "من خصائص النظام"], correct: 1, explanation: "يمكنك تفعيل أو تعطيل برامج بدء التشغيل من خلال علامة التبويب 'Startup' في مدير المهام." },
+                        { question: "هل يمكنك تثبيت تطبيقات أندرويد على ويندوز 11؟", options: ["نعم، من خلال متجر Google Play مباشرة", "نعم، من خلال متجر أمازون المدمج", "لا، هذا غير ممكن", "فقط إذا كان لديك هاتف سامسونج"], correct: 1, explanation: "يدعم ويندوز 11 تطبيقات أندرويد رسميًا عبر Amazon Appstore المتاح داخل متجر مايكروسوفت." },
+                        { question: "ماذا يعني 'تثبيت البرنامج كمسؤول' (Run as administrator)؟", options: ["تثبيت أسرع", "منح البرنامج صلاحيات كاملة للتعديل على النظام", "تثبيت نسخة خاصة", "تثبيت بدون اتصال بالإنترنت"], correct: 1, explanation: "يمنح هذا الخيار البرنامج أذونات مرتفعة لتعديل ملفات النظام وإعداداته، وهو ضروري لبعض عمليات التثبيت." }
+                    ]
+                }
+            };
+            
+            // --- UI Elements ---
+            Object.keys(quizData).forEach(quizId => {
+                const quiz = quizData[quizId];
+                if (quiz.questions && quiz.questions.length > 0) {
+                    const card = document.createElement('div');
+                    card.className = 'card quiz-topic-card';
+                    card.dataset.quiz = quizId;
+                    card.innerHTML = `
+                        <h3 class="text-2xl font-bold text-white mb-2">${quiz.title}</h3>
+                        <p class="text-slate-400 mb-4">اختبار مكون من ${quiz.questions.length} سؤالًا لتقييم معرفتك.</p>
+                        <span class="text-sky-400 font-semibold">ابدأ الاختبار الآن &larr;</span>
+                    `;
+                    quizSelectionContainer.appendChild(card);
+                }
+            });
+
+            function startQuiz(quizId) {
+                const quiz = quizData[quizId];
+                if (!quiz || !quiz.questions || quiz.questions.length === 0) {
+                    alert("لا توجد أسئلة متاحة لهذا القسم حاليًا.");
+                    return;
+                }
+                
+                currentQuizId = quizId;
+                currentQuestionIndex = 0;
+                score = 0;
+                userAnswers = [];
+                
+                quizTitle.textContent = `اختبار: ${quiz.title}`;
+                resultsContainer.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                
+                quizModal.style.display = 'flex';
+                showQuestion();
+            }
+
+            function showQuestion() {
+                const questions = quizData[currentQuizId].questions;
+                if (currentQuestionIndex >= questions.length) {
+                    showResults();
+                    return;
+                }
+
+                const question = questions[currentQuestionIndex];
+                document.getElementById('question-text').textContent = question.question;
+                const optionsContainer = document.getElementById('options-container');
+                optionsContainer.innerHTML = '';
+
+                question.options.forEach((option, index) => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.classList.add('quiz-option', 'p-4', 'rounded-lg', 'w-full', 'text-right', 'transition');
+                    button.onclick = (e) => selectAnswer(index, e.target);
+                    optionsContainer.appendChild(button);
+                });
+                document.getElementById('quiz-progress').textContent = `السؤال ${currentQuestionIndex + 1} من ${questions.length}`;
+            }
+
+            function selectAnswer(selectedIndex, button) {
+                const questions = quizData[currentQuizId].questions;
+                const question = questions[currentQuestionIndex];
+                const isCorrect = selectedIndex === question.correct;
+
+                userAnswers.push({
+                    question: question.question,
+                    options: question.options,
+                    selected: selectedIndex,
+                    correct: question.correct,
+                    explanation: question.explanation
+                });
+
+                if (isCorrect) {
+                    score++;
+                    button.classList.add('correct');
+                } else {
+                    button.classList.add('incorrect');
+                }
+                
+                document.querySelectorAll('.quiz-option').forEach(btn => {
+                    btn.disabled = true;
+                    btn.style.cursor = 'not-allowed';
+                });
+
+                setTimeout(() => {
+                    document.querySelectorAll('.quiz-option').forEach(btn => {
+                        btn.disabled = false;
+                        btn.style.cursor = 'pointer';
+                    });
+                    currentQuestionIndex++;
+                    showQuestion();
+                }, 1200);
+            }
+
+            function showResults() {
+                quizContainer.classList.add('hidden');
+                resultsContainer.classList.remove('hidden');
+
+                document.getElementById('score-text').textContent = `نتيجتك: ${score} من ${userAnswers.length}`;
+                const detailsContainer = document.getElementById('results-details');
+                detailsContainer.innerHTML = '';
+
+                userAnswers.forEach((answer, index) => {
+                    const resultEl = document.createElement('div');
+                    resultEl.classList.add('card', 'p-4', 'mb-4');
+                    
+                    let optionsHtml = '';
+                    answer.options.forEach((opt, i) => {
+                        let classes = 'block p-2 rounded mt-1 text-right';
+                        if (i === answer.correct) {
+                            classes += ' bg-green-500/20 final-correct';
+                        }
+                        if (i === answer.selected && i !== answer.correct) {
+                             classes += ' bg-red-500/20';
+                        }
+                        optionsHtml += `<div class="${classes}">${opt}</div>`;
+                    });
+
+                    resultEl.innerHTML = `
+                        <p class="font-bold text-white">${index + 1}. ${answer.question}</p>
+                        <div class="my-2">${optionsHtml}</div>
+                        ${answer.selected !== answer.correct ? `<p class="text-sm text-amber-400 mt-2"><strong>الشرح:</strong> ${answer.explanation}</p>` : ''}
+                    `;
+                    detailsContainer.appendChild(resultEl);
+                });
+            }
+
+            function closeQuiz() {
+                quizModal.style.display = 'none';
+            }
+
+            // Event Listeners for quiz buttons
+            document.querySelectorAll('.quiz-topic-card').forEach(card => {
+                card.addEventListener('click', () => startQuiz(card.dataset.quiz));
+            });
+            closeQuizBtn.addEventListener('click', closeQuiz);
+            restartQuizBtn.addEventListener('click', () => startQuiz(currentQuizId));
+
+        });
+    </script>
+</body>
+</html>
