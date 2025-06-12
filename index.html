@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>بوابة نظام مقرر نظم التشغيل</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #64748b; }
+        .content-section { display: none; }
+        .content-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .card {
+            background-color: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(56, 189, 248, 0.5);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.2s;
+            margin-top: 0.5rem;
+        }
+        .file-btn { background-color: #0ea5e9; } /* sky-500 */
+        .file-btn:hover { background-color: #0284c7; } /* sky-600 */
+        .youtube-btn { background-color: #ef4444; } /* red-500 */
+        .youtube-btn:hover { background-color: #dc2626; } /* red-600 */
+        .content-section h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #e2e8f0;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #475569;
+        }
+        .content-section h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-bottom: 0.75rem;
+            margin-top: 1rem;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-300">
+
+    <div class="flex flex-col md:flex-row min-h-screen">
+        <!-- Sidebar -->
+        <aside class="w-full md:w-64 bg-slate-800/50 p-6 border-l border-slate-700/50 flex-shrink-0">
+            <div class="flex items-center gap-3 mb-10">
+                <div class="bg-sky-500 p-2 rounded-lg shadow-lg shadow-sky-500/30">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-white"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                </div>
+                <h1 class="text-xl font-bold text-white">نظام المقرر</h1>
+            </div>
+            <nav>
+                <ul class="space-y-2">
+                    <li><a href="#intro" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-sky-500/20 hover:text-white transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                        المحتوى النظري
+                    </a></li>
+                    <li><a href="#comparison" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-sky-500/20 hover:text-white transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+                        مقارنة الأنظمة
+                    </a></li>
+                     <li><a href="#android" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-green-500/20 hover:text-white transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 14V7a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v7"></path><path d="M12 18v-4"></path><path d="M15 18H9"></path><path d="M19 14h.01"></path><path d="M5 14h.01"></path><path d="M12 5h.01"></path><path d="M12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path></svg>
+                        نظام أندرويد
+                    </a></li>
+                    <li><a href="#ios" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-gray-500/20 hover:text-white transition-all duration-200">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                        نظام iOS
+                    </a></li>
+                    <li><a href="#install" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-sky-500/20 hover:text-white transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        تثبيت ويندوز 11
+                    </a></li>
+                    <li><a href="#settings" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-sky-500/20 hover:text-white transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 0 2l-.15.08a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1 0-2l-.15-.08a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                        إعدادات ويندوز 11
+                    </a></li>
+                    <li><a href="#apps" class="nav-link flex items-center gap-3 px-4 py-2 rounded-lg text-slate-300 hover:bg-sky-500/20 hover:text-white transition-all duration-200">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+                        إدارة التطبيقات
+                    </a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 md:p-12 overflow-y-auto">
+            
+            <!-- Section: Intro -->
+            <section id="intro" class="content-section">
+                <h2 class="text-3xl font-bold text-white mb-8">المحتوى النظري لمقرر نظم التشغيل</h2>
+                
+                <div class="card space-y-8">
+                    <div id="chapter1">
+                        <h3>الفصل الأول: مقدمة شاملة في أنظمة التشغيل</h3>
+                        <h4>1.1 تعريف نظام التشغيل (Operating System)</h4>
+                        <p>نظام التشغيل هو البرنامج الأساسي أو النظام البرمجي الذي يدير موارد الجهاز ويسمح بتشغيل التطبيقات المختلفة. إنه يقوم بدور الوسيط بين المستخدم ومكونات الجهاز المادية (Hardware)، مما يضمن تفاعل الأجهزة وتنفيذ الأوامر بكفاءة. كما يتحكم نظام التشغيل أيضا في إدارة الذاكرة، والعمليات، والتخزين.</p>
+                        
+                        <h4>1.2 تاريخ تطور أنظمة التشغيل</h4>
+                        <p>بدأت أنظمة التشغيل في الظهور مع بداية استخدام الحواسيب في منتصف القرن العشرين، وقد مرت بمراحل تطور عديدة وصولًا إلى الأنظمة الحديثة التي تدعم الشبكات وتعدد المهام.</p>
+                        
+                        <h4>1.3 أنواع أنظمة التشغيل</h4>
+                        <ul class="list-disc pr-5 space-y-2 mt-2">
+                           <li><strong>أنظمة التشغيل المكتبية:</strong> مثل Windows, macOS, Linux.</li>
+                           <li><strong>أنظمة التشغيل المحمولة:</strong> مثل Android و iOS.</li>
+                           <li><strong>أنظمة التشغيل المدمجة:</strong> لأجهزة ذات وظائف محددة.</li>
+                           <li><strong>أنظمة تشغيل الزمن الحقيقي:</strong> للتطبيقات التي تتطلب استجابة فورية.</li>
+                        </ul>
+                    </div>
+            
+                    <div id="chapter2">
+                        <h3>الفصل الثاني: مكونات ووظائف نظام التشغيل</h3>
+                        <p>يتكون نظام التشغيل من عدة مكونات رئيسية تساعده في أداء مهامه بكفاءة، أهمها النواة (Kernel)، الغلاف (Shell)، واجهة المستخدم (UI)، نظام إدارة الملفات، بالإضافة إلى وحدات إدارة الموارد والعمليات والذاكرة والأمان.</p>
+                    </div>
+
+                    <div id="chapter3">
+                        <h3>الفصل الثالث: مقارنة تفصيلية بين أشهر أنظمة التشغيل</h3>
+                        <p>تتم المقارنة بين الأنظمة الرائدة بناءً على عدة معايير مثل تاريخ كل نظام، أبرز مميزاته، ونقاط ضعفه، مما يساعد في اختيار النظام الأنسب حسب الاحتياج.</p>
+                    </div>
+                    
+                    <div id="chapter4">
+                        <h3>الفصل الرابع: نظام التشغيل ويندوز 11</h3>
+                        <p>صممت مايكروسوفت ويندوز 11 ليكون أكثر حداثة وبساطة وسرعة، ويركز على تجربة مستخدم جديدة، ميزات إنتاجية متقدمة، تكامل Teams، ودعم تطبيقات أندرويد. ويتطلب مواصفات حديثة للتشغيل ويمكن الحصول عليه بالترقية أو التثبيت النظيف.</p>
+                    </div>
+
+                    <div class="mt-8 pt-6 border-t border-slate-700 text-center">
+                        <a href="مقرر نظم التشغيل للأجهزة الذكية.pdf" target="_blank" class="file-btn action-btn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            فتح المقرر الدراسي الكامل
+                        </a>
+                        <!-- ضع هنا رابط الفيديو الخاص بالمقدمة -->
+                        <a href="https://youtu.be/3mpIJH5PyKE?si=rFZA3Qbf9RRvH3sd" target="_blank" class="youtube-btn action-btn mr-2">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a2.4 2.4 0 0 1 0-10l7.5-4a2.4 2.4 0 0 1 3 0l7.5 4a2.4 2.4 0 0 1 0 10l-7.5 4a2.4 2.4 0 0 1-3 0Z"></path><path d="m10 15 5-3-5-3z"></path></svg>
+                            شاهد شرح فيديو
+                        </a>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Section: Comparison -->
+            <section id="comparison" class="content-section">
+                 <h2 class="text-3xl font-bold text-white mb-2">مقارنة بين أنظمة التشغيل</h2>
+                 <p class="text-slate-400 mb-8">جدول يوضح الفروقات الرئيسية بين Windows 11, Android, و iOS.</p>
+                <div class="overflow-x-auto card p-1">
+                    <table class="w-full text-right">
+                         <thead class="bg-slate-700/50">
+                            <tr>
+                                <th class="p-4 font-semibold text-white">الميزة</th>
+                                <th class="p-4 font-semibold text-white">ويندوز 11</th>
+                                <th class="p-4 font-semibold text-white">أندرويد</th>
+                                <th class="p-4 font-semibold text-white">آي أو إس</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-700/50">
+                            <tr class="hover:bg-slate-800/40 transition-colors"><td class="p-4 font-semibold text-sky-400">المصدر</td><td class="p-4">مغلق المصدر</td><td class="p-4">مفتوح المصدر</td><td class="p-4">مغلق المصدر</td></tr>
+                            <tr class="hover:bg-slate-800/40 transition-colors"><td class="p-4 font-semibold text-sky-400">الأداء</td><td class="p-4">يعتمد على مواصفات الجهاز</td><td class="p-4">يختلف بشكل كبير بين الأجهزة</td><td class="p-4">مستقر ومتناغم</td></tr>
+                            <tr class="hover:bg-slate-800/40 transition-colors"><td class="p-4 font-semibold text-sky-400">التخصيص</td><td class="p-4">مرونة عالية</td><td class="p-4">تخصيص عميق جداً</td><td class="p-4">محدود وموحد</td></tr>
+                            <tr class="hover:bg-slate-800/40 transition-colors"><td class="p-4 font-semibold text-sky-400">الأمان</td><td class="p-4">ميزات متقدمة</td><td class="p-4">ميزات متقدمة</td><td class="p-4">يعتبر الأكثر أمانًا (نظام مغلق)</td></tr>
+                            <tr class="hover:bg-slate-800/40 transition-colors"><td class="p-4 font-semibold text-sky-400">التطبيقات</td><td class="p-4">مجموعة واسعة</td><td class="p-4">Google Play</td><td class="p-4">App Store</td></tr>
+                             <tr class="hover:bg-slate-800/40 transition-colors"><td class="p-4 font-semibold text-sky-400">التحديثات</td><td class="p-4">مباشرة من مايكروسوفت</td><td class="p-4">قد تتأخر من الشركات</td><td class="p-4">مباشرة من Apple</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                 <div class="mt-8 text-center">
+                    <a href="سكشن 1.pdf" target="_blank" class="file-btn action-btn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                       فتح ملف المقارنة
+                    </a>
+                </div>
+            </section>
+            
+             <section id="android" class="content-section">
+                <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400"><path d="M17 14V7a2 2 0 0 0-2-2H9a2 2 0 0 0-2 2v7"></path><path d="M12 18v-4"></path><path d="M15 18H9"></path><path d="M19 14h.01"></path><path d="M5 14h.01"></path><path d="M12 5h.01"></path><path d="M12 21a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"></path></svg> نظرة عميقة على نظام أندرويد</h2>
+                <p class="text-slate-400 mb-8">تاريخ، مميزات، وإصدارات النظام الأكثر انتشارًا في العالم.</p>
+                <div class="card mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-3">فلسفة أندرويد: الحرية والتنوع</h3>
+                    <p>بدأ تطوير نظام أندرويد في 2003، واستحوذت عليه جوجل في 2005. فلسفته تقوم على كونه نظامًا مفتوح المصدر، مما يمنح الشركات حرية تعديله ليناسب أجهزتها، ويعطي المستخدمين قدرة هائلة على تخصيص هواتفهم. هذا التنوع هو سر انتشاره الواسع عالميًا.</p>
+                </div>
+                <h3 class="text-2xl font-bold text-white my-6">أبرز المميزات والعيوب</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card"><h4 class="font-bold text-lg text-green-400 mb-3">مميزات</h4><ul class="list-disc pr-5 space-y-2"><li><strong>مفتوح المصدر:</strong> يتيح مرونة هائلة للمطورين والمصنعين.</li><li><strong>تخصيص عالٍ:</strong> تغيير الواجهات، الأيقونات، والويدجتس بحرية تامة.</li><li><strong>متجر تطبيقات ضخم:</strong> يوفر متجر Google Play ملايين التطبيقات والخدمات.</li><li><strong>دعم واسع للأجهزة:</strong> يعمل على أجهزة من مختلف الفئات السعرية.</li></ul></div>
+                    <div class="card"><h4 class="font-bold text-lg text-red-400 mb-3">عيوب</h4><ul class="list-disc pr-5 space-y-2"><li><strong>تجزئة النظام:</strong> تعدد الإصدارات يسبب تجربة غير موحدة.</li><li><strong>تأخر التحديثات:</strong> غالبًا ما تتأخر التحديثات الأمنية في الوصول.</li><li><strong>قضايا أمان:</strong> طبيعته المفتوحة تجعله أكثر عرضة للبرمجيات الخبيثة.</li><li><strong>جودة التطبيقات:</strong> قد تختلف جودة التطبيقات بشكل كبير.</li></ul></div>
+                </div>
+                 <div class="mt-8 text-center">
+                    <!-- ضع هنا رابط الفيديو الخاص بنظام أندرويد -->
+                    <a href="https://youtu.be/ys8H1SBdrS8?si=j6iWHhwCXusgbW3I" target="_blank" class="youtube-btn action-btn">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a2.4 2.4 0 0 1 0-10l7.5-4a2.4 2.4 0 0 1 3 0l7.5 4a2.4 2.4 0 0 1 0 10l-7.5 4a2.4 2.4 0 0 1-3 0Z"></path><path d="m10 15 5-3-5-3z"></path></svg>
+                        استكشف جديد أندرويد
+                    </a>
+                </div>
+            </section>
+            
+            <section id="ios" class="content-section">
+                <h2 class="text-3xl font-bold text-white mb-2 flex items-center gap-3"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gray-300"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg> نظرة عميقة على نظام iOS</h2>
+                <p class="text-slate-400 mb-8">النظام المغلق من Apple الذي يشتهر بالأمان، الأداء، والتكامل السلس.</p>
+                 <div class="card mb-6">
+                    <h3 class="text-xl font-semibold text-white mb-3">فلسفة iOS: البساطة والجودة</h3>
+                    <p>أطلقته Apple في 2007 مع أول آيفون، ويركز على تقديم تجربة استخدام موحدة، بسيطة، وآمنة. النظام مغلق المصدر، مما يعني أن Apple تتحكم بكل جوانبه، من العتاد إلى البرمجيات، لضمان أعلى مستويات الأداء والجودة.</p>
+                </div>
+                <h3 class="text-2xl font-bold text-white my-6">أبرز المميزات والعيوب</h3>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card"><h4 class="font-bold text-lg text-green-400 mb-3">مميزات</h4><ul class="list-disc pr-5 space-y-2"><li><strong>أمان وخصوصية قوية:</strong> يُعتبر من أكثر الأنظمة أمانًا.</li><li><strong>تكامل ممتاز مع الأجهزة:</strong> يعمل بسلاسة فائقة مع منظومة Apple.</li><li><strong>واجهة سهلة وسلسة:</strong> يقدم تجربة استخدام بسيطة وموحدة.</li><li><strong>جودة تطبيقات عالية:</strong> يتميز متجر App Store بتطبيقات ذات جودة وموثوقية.</li></ul></div>
+                    <div class="card"><h4 class="font-bold text-lg text-red-400 mb-3">عيوب</h4><ul class="list-disc pr-5 space-y-2"><li><strong>نظام مغلق:</strong> يفرض قيودًا على التخصيص ونقل الملفات.</li><li><strong>محدودية التخصيص:</strong> خيارات محدودة جدًا لتغيير شكل الواجهة.</li><li><strong>تكلفة أجهزة مرتفعة:</strong> يعمل فقط على أجهزة Apple باهظة الثمن.</li><li><strong>الاعتماد على خدمات Apple:</strong> يجبرك على استخدام خدماتها بشكل كبير.</li></ul></div>
+                </div>
+                 <div class="mt-8">
+                    <h3 class="text-2xl font-bold text-white mb-4">مثال لمعلومات جهاز iOS</h3>
+                     <div class="grid md:grid-cols-2 gap-4">
+                        <img src="WhatsApp Image 2025-06-12 at 14.54.28_cc76459c.jpg" alt="صورة معلومات جهاز iOS 1" onerror="this.onerror=null;this.src='https://placehold.co/400x800/2d3748/e2e8f0?text=Image+Not+Found';" class="rounded-lg shadow-lg w-full h-auto">
+                        <img src="WhatsApp Image 2025-06-12 at 14.54.28_77eb9a46.jpg" alt="صورة معلومات جهاز iOS 2" onerror="this.onerror=null;this.src='https://placehold.co/400x800/2d3748/e2e8f0?text=Image+Not+Found';" class="rounded-lg shadow-lg w-full h-auto">
+                    </div>
+                 </div>
+                 <div class="mt-8 text-center">
+                    <!-- ضع هنا رابط الفيديو الخاص بنظام iOS -->
+                    <a href="https://youtu.be/JvWGGjIhdLI?si=GvJmyVv3AGsYZdEP" target="_blank" class="youtube-btn action-btn">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a2.4 2.4 0 0 1 0-10l7.5-4a2.4 2.4 0 0 1 3 0l7.5 4a2.4 2.4 0 0 1 0 10l-7.5 4a2.4 2.4 0 0 1-3 0Z"></path><path d="m10 15 5-3-5-3z"></path></svg>
+                        استكشف جديد iOS
+                    </a>
+                </div>
+            </section>
+
+            <!-- Section: Install -->
+            <section id="install" class="content-section">
+                <h2 class="text-3xl font-bold text-white mb-2">الدليل الشامل لتثبيت ويندوز 11</h2>
+                <p class="text-slate-400 mb-8">شرح تفصيلي وموسع لكل مرحلة من مراحل تثبيت نظام ويندوز 11 كنظام نظيف.</p>
+                <div class="space-y-6">
+                    <div class="card">
+                        <h3 class="text-xl font-semibold text-white mb-3">المرحلة الأولى: التجهيز وإنشاء وسائط التثبيت</h3>
+                        <p class="leading-relaxed">هذه هي مرحلة الأساس. ستحتاج إلى محرك أقراص فلاش (USB) بسعة 8 جيجابايت على الأقل، واتصال مستقر بالإنترنت. الهدف هو تحويل هذه الفلاشة العادية إلى أداة إقلاع (Bootable) تحتوي على ملفات تثبيت ويندوز 11. للقيام بذلك، توجه إلى موقع مايكروسوفت الرسمي، وابحث عن أداة "Media Creation Tool" الخاصة بويندوز 11 وقم بتنزيلها. عند تشغيل الأداة، ستمنحك خيارين: "الترقية" أو "إنشاء وسائط تثبيت". اختر الخيار الثاني، ثم حدد "USB flash drive". ستقوم الأداة تلقائيًا بتنزيل أحدث نسخة من ويندوز 11 وتهيئتها على الفلاشة، مما يجعلها جاهزة لعملية التثبيت.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-semibold text-white mb-3">المرحلة الثانية: إعداد الـ BIOS والإقلاع من الـ USB</h3>
+                        <p class="leading-relaxed">الآن بعد أن أصبحت الفلاشة جاهزة، يجب أن تخبر الكمبيوتر بأن يبدأ عملية الإقلاع منها بدلاً من القرص الصلب الداخلي. للقيام بذلك، أعد تشغيل جهازك مع إبقاء الفلاشة موصولة. فور ظهور شعار الشركة المصنعة للجهاز (مثل Dell, HP, Lenovo)، ابدأ بالضغط بشكل متكرر على مفتاح الدخول إلى إعدادات الـ BIOS أو UEFI (عادةً ما يكون F2, F10, F12, أو Del). داخل قائمة الـ BIOS، ابحث عن قسم "Boot" أو "Boot Order". قم بتغيير الترتيب لجعل "USB Drive" أو اسم الفلاشة هو الخيار الأول في القائمة. بعد ذلك، احفظ الإعدادات وأعد التشغيل. سيقوم الجهاز الآن بالإقلاع مباشرة من الفلاشة وبدء معالج تثبيت ويندوز.</p>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-semibold text-white mb-3">المرحلة الثالثة: عملية التثبيت الفعلية وتقسيم القرص</h3>
+                        <p class="leading-relaxed">هنا تبدأ الخطوات الفعلية لتثبيت النظام. ستظهر لك شاشة تطلب تحديد اللغة وتنسيق الوقت. بعد ذلك، اضغط على "Install now". ستصل إلى شاشة تطلب نوع التثبيت. اختر "Custom: Install Windows only (advanced)" للقيام بتثبيت نظيف. ستظهر لك قائمة بالأقراص (Partitions) الموجودة على القرص الصلب. هنا يجب توخي الحذر، حيث أن حذف أي قسم سيؤدي إلى فقدان بياناته. لتثبيت نظيف، يمكنك حذف الأقسام القديمة المتعلقة بالويندوز السابق، ثم تحديد المساحة غير المخصصة (Unallocated Space) والضغط على "New" لإنشاء قسم جديد. سيقوم ويندوز تلقائيًا بإنشاء أقسام صغيرة إضافية ضرورية لعمل النظام. حدد القسم الرئيسي الذي أنشأته (Primary) واضغط "Next" لبدء نسخ الملفات وتثبيت النظام.</p>
+                    </div>
+                     <div class="card">
+                        <h3 class="text-xl font-semibold text-white mb-3">المرحلة الرابعة: الإعدادات النهائية والتخصيص</h3>
+                        <p class="leading-relaxed">بعد انتهاء نسخ الملفات، سيقوم الكمبيوتر بإعادة التشغيل عدة مرات. في هذه المرحلة، يمكنك إزالة الفلاشة. سيقوم ويندوز بإرشادك عبر سلسلة من شاشات الإعداد النهائية (تُعرف بـ Out-of-Box Experience). ستحتاج إلى اختيار بلدك، تخطيط لوحة المفاتيح، الاتصال بشبكة الواي فاي، وتسجيل الدخول باستخدام حساب مايكروسوفت الخاص بك. سيُطلب منك أيضًا إنشاء رقم تعريف شخصي (PIN) لتسجيل الدخول، وتحديد إعدادات الخصوصية التي تفضلها. بعد إكمال هذه الخطوات، سيقوم ويندوز بتهيئة سطح المكتب للمرة الأولى، وبذلك تكون قد انتهيت من تثبيت ويندوز 11 بنجاح.</p>
+                    </div>
+                </div>
+                 <div class="mt-8 text-center">
+                    <a href="سكشن 2.pdf" target="_blank" class="file-btn action-btn mr-2">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        فتح ملف دليل التثبيت
+                    </a>
+                    <!-- ضع هنا رابط الفيديو الخاص بتثبيت ويندوز 11 -->
+                     <a href="https://youtu.be/-xLzzHTN3Yc?si=wipariFLPOcvhrJf" target="_blank" class="youtube-btn action-btn">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 17a2.4 2.4 0 0 1 0-10l7.5-4a2.4 2.4 0 0 1 3 0l7.5 4a2.4 2.4 0 0 1 0 10l-7.5 4a2.4 2.4 0 0 1-3 0Z"></path><path d="m10 15 5-3-5-3z"></path></svg>
+                        شاهد دليل التثبيت العملي
+                    </a>
+                </div>
+            </section>
+
+            <!-- Section: Settings -->
+            <section id="settings" class="content-section">
+                <h2 class="text-3xl font-bold text-white mb-2">شرح إعدادات ويندوز 11</h2>
+                <p class="text-slate-400 mb-8">كيفية تخصيص والتحكم في الإعدادات الرئيسية للنظام.</p>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card"><h3 class="text-xl font-semibold text-white mb-3">اللغة والمنطقة</h3><p>يمكن الوصول إليها من <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded">الإعدادات > Time & language</code>. لتغيير لغة العرض وإضافة لغات وتحديد بلدك.</p></div>
+                    <div class="card"><h3 class="text-xl font-semibold text-white mb-3">تخصيص سطح المكتب</h3><p>من <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded">الإعدادات > Personalization</code>، يمكنك تغيير الخلفية، الألوان، السمات، وشريط المهام.</p></div>
+                    <div class="card"><h3 class="text-xl font-semibold text-white mb-3">الأيقونات</h3><p>انقر بزر الماوس الأيمن على سطح المكتب ثم <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded">View</code> لتغيير حجم الأيقونات، ترتيبها، أو إخفائها.</p></div>
+                    <div class="card"><h3 class="text-xl font-semibold text-white mb-3">قائمة ابدأ</h3><p>تم تصميمها لتكون في المنتصف. يمكنك تثبيت أي تطبيق فيها بالضغط عليه بالزر الأيمن واختيار <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded">Pin to Start</code>.</p></div>
+                </div>
+                 <div class="mt-8 text-center">
+                    <a href="سكشن 3.pdf" target="_blank" class="file-btn action-btn mr-2">ملف الإعدادات (1)</a>
+                    <a href="سكشن 4.pdf · version 1.pdf" target="_blank" class="file-btn action-btn">ملف الإعدادات (2)</a>
+                </div>
+            </section>
+
+            <!-- Section: Apps -->
+            <section id="apps" class="content-section">
+                <h2 class="text-3xl font-bold text-white mb-2">إدارة التطبيقات</h2>
+                <p class="text-slate-400 mb-8">خطوات تثبيت وإزالة البرامج على نظام ويندوز 11.</p>
+                 <div class="grid md:grid-cols-2 gap-6">
+                    <div class="card"><h3 class="text-xl font-semibold text-white mb-4">خطوات تثبيت برنامج</h3><ol class="list-decimal pr-6 space-y-2"><li>قم بتنزيل ملف التثبيت الخاص بالبرنامج.</li><li>انقر نقرًا مزدوجًا على الملف لبدء العملية.</li><li>في نافذة التحكم بحساب المستخدم (UAC)، اضغط "Yes".</li><li>اتبع تعليمات معالج التثبيت.</li><li>اضغط "Install" ثم "Finish" عند الانتهاء.</li></ol></div>
+                    <div class="card"><h3 class="text-xl font-semibold text-white mb-4">خطوات إزالة تثبيت برنامج</h3><ol class="list-decimal pr-6 space-y-2"><li>اذهب إلى <code class="bg-slate-700 text-sky-300 px-2 py-1 rounded">Settings > Apps > Installed apps</code>.</li><li>ابحث عن البرنامج الذي تريد إزالته.</li><li>انقر على الثلاث نقاط (...) بجانب اسم البرنامج.</li><li>اختر "Uninstall" وقم بتأكيد العملية.</li></ol></div>
+                </div>
+                 <div class="mt-8 text-center">
+                    <a href="سكشن 5.pdf" target="_blank" class="file-btn action-btn">
+                       <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                        فتح ملف إدارة التطبيقات
+                    </a>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // --- TAB SWITCHING LOGIC ---
+            const navLinks = document.querySelectorAll('.nav-link');
+            const contentSections = document.querySelectorAll('.content-section');
+            function switchTab(targetId) {
+                contentSections.forEach(section => {
+                    section.classList.toggle('active', '#' + section.id === targetId);
+                });
+                navLinks.forEach(link => {
+                    link.classList.remove('bg-sky-500/30', 'bg-green-500/30', 'bg-gray-500/30', 'text-white');
+                    link.classList.add('text-slate-300');
+                    if (link.getAttribute('href') === targetId) {
+                        link.classList.add('text-white');
+                        if (targetId === '#android') { link.classList.add('bg-green-500/30'); } 
+                        else if (targetId === '#ios') { link.classList.add('bg-gray-500/30'); } 
+                        else { link.classList.add('bg-sky-500/30'); }
+                    }
+                });
+            }
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    const targetId = this.getAttribute('href');
+                    if (targetId.startsWith('#')) {
+                        e.preventDefault();
+                        localStorage.setItem('activeOsTab', targetId);
+                        switchTab(targetId);
+                    }
+                });
+            });
+            const savedTab = localStorage.getItem('activeOsTab') || '#intro';
+            switchTab(savedTab);
+        });
+    </script>
+</body>
+</html>
